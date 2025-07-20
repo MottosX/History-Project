@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 "group": "Conflicts", // ROW 5: CONFLICTS
                 
                 "media": {
-                    "url": "media/Battle_of_Gettysburg_Currier_Ives.png",
+                    "url": "media/Battle_of_Gettysburg,_by_Currier_and_Ives.png",
                     "caption": "The battle of Gettysburg, Pa. July 3d. 1863, depicting the climactic battle fought July 1–3, 1863. This hand-colored lithograph by Currier and Ives shows the massive scale of Civil War engagements where repeating weapons gave Union forces significant tactical advantages. The battle was a turning point won by the North."
                 },
                 
