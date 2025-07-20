@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Timeline | American Firearms Evolution</title>
+    <meta name="description" content="Interactive timeline showing the evolution of American firearms technology from the Revolutionary War through the Civil War.">
+    
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/timeline.css">
+    
+    <!-- Timeline.js CSS -->
+    <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+Pro:wght@300;400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --primary-blue: #1B4A7A;
+            --dark-blue: #0F2C45;
+            --light-gold: #F5E6A3;
+            --cream: #FBF9F1;
+            --dark-gray: #2C2C2C;
+            --light-gray: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background: linear-gradient(135deg, var(--cream) 0%, var(--light-gray) 100%);
+            min-height: 100vh;
+        }
+
+        /* Animated background elements */
+        .timeline-bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-element {
+            position: absolute;
+            opacity: 0.03;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-element:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+            font-size: 3rem;
+        }
+
+        .bg-element:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 1s;
+            font-size: 2.5rem;
+        }
+
+        .bg-element:nth-child(3) {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 2s;
+            font-size: 4rem;
+        }
+
+        .bg-element:nth-child(4) {
+            bottom: 30%;
+            right: 5%;
+            animation-delay: 3s;
+            font-size: 2rem;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Enhanced Timeline Header */
+        .timeline-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+
+        .timeline-header .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ffffff, var(--light-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .timeline-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .timeline-instructions {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.15);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .instruction-item:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .instruction-item i {
+            color: var(--light-gold);
+            font-size: 1.2rem;
+        }
+
+        /* Enhanced Timeline Container */
+        .timeline-main {
+            padding: 3rem 0;
+        }
+
+        .timeline-wrapper {
+            background: white;
+            border-radius: 20px;
+            margin: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .timeline-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--primary-blue), var(--primary-gold));
+        }
+
+        #timeline-embed {
+            width: 100%;
+            height: 1050px;
+            border-radius: 16px;
+        }
+
+        /* Enhanced Timeline Controls */
+        .timeline-controls {
+            background: white;
+            margin: 2rem;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .timeline-controls h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .height-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #height-slider {
+            -webkit-appearance: none;
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--light-gold), var(--primary-gold));
+            outline: none;
+        }
+
+        #height-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .height-presets {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .height-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-gold);
+            background: transparent;
+            color: var(--primary-blue);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .height-btn:hover,
+        .height-btn.active {
+            background: var(--primary-gold);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Navigation */
+        .timeline-nav-helper {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            margin: 2rem;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-nav-helper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .timeline-nav-helper .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-nav-helper h3 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: var(--light-gold);
+        }
+
+        .nav-periods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .period-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .period-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .period-btn:hover::before {
+            left: 100%;
+        }
+
+        .period-btn:hover,
+        .period-btn.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--light-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .period-btn i {
+            font-size: 1.5rem;
+            color: var(--light-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .period-btn span {
+            display: block;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .period-btn small {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+
+
+        /* Fallback styling */
+        .timeline-fallback {
+            display: none;
+            padding: 3rem;
+            background: white;
+            border-radius: 20px;
+            margin: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .timeline-fallback.show {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .timeline-title {
+                font-size: 2.5rem;
+            }
+
+            .timeline-instructions {
+                gap: 1rem;
+            }
+
+            .instruction-item {
+                padding: 0.5rem 1rem;
+            }
+
+            .nav-periods {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .period-btn {
+                text-align: center;
+            }
+
+            .innovations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .height-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="timeline-bg-elements">
+        <div class="bg-element"><i class="fas fa-crosshairs"></i></div>
+        <div class="bg-element"><i class="fas fa-fire"></i></div>
+        <div class="bg-element"><i class="fas fa-bolt"></i></div>
+        <div class="bg-element"><i class="fas fa-star"></i></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <a href="index.html">
+                        <i class="fas fa-crosshairs"></i>
+                        <span>American Firearms Evolution</span>
+                    </a>
+                </div>
+                
+                <ul class="nav-menu" id="nav-menu">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="timeline.html" class="nav-link">Interactive Timeline</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="sources.html" class="nav-link">Sources</a>
+                    </li>
+                </ul>
+                
+                <div class="nav-toggle" id="mobile-menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Enhanced Timeline Header -->
+    <section class="timeline-header">
+        <div class="container">
+            <h1 class="timeline-title">Evolution of American Firearms</h1>
+            <p class="timeline-subtitle">
+                Interactive timeline exploring how weapons technology evolved from 1720 to 1869 
+                and transformed American military capabilities through three revolutionary eras
+            </p>
+            <div class="timeline-instructions">
+                <div class="instruction-item">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <span>Click events to explore details</span>
+                </div>
+                <div class="instruction-item">
+                    <i class="fas fa-arrows-alt-h"></i>
+                    <span>Scroll or drag to navigate timeline</span>
+                </div>
+                <div class="instruction-item">
+                    <i class="fas fa-search-plus"></i>
+                    <span>Zoom to focus on specific periods</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Container -->
+    <main class="timeline-main">
+        <div class="timeline-wrapper">
+            <div id="timeline-embed"></div>
+            
+            <!-- Fallback content if Timeline.js fails to load -->
+            <div id="timeline-fallback" class="timeline-fallback">
+                <h3><i class="fas fa-hourglass-half"></i> Timeline Loading...</h3>
+                <p>If the timeline doesn't appear, there may be a connection issue with the Timeline.js library.</p>
+                <p><strong>Timeline Overview: Evolution of American Firearms (1720-1869)</strong></p>
+                <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                    <li><strong>1720-1820:</strong> Smoothbore Era - Flintlock muskets and foundational weapons</li>
+                    <li><strong>1820-1847:</strong> Rifling & Percussion Revolution - Accuracy and reliability advances</li>
+                    <li><strong>1847-1869:</strong> Repeating Weapons Era - Multi-shot capability and rapid fire</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Enhanced Timeline Controls -->
+        <div class="timeline-controls">
+            <div class="container">
+                <h4><i class="fas fa-sliders-h"></i> Timeline Display Options</h4>
+                <div class="height-controls">
+                    <label for="height-slider"><i class="fas fa-arrows-alt-v"></i> Height:</label>
+                    <input type="range" id="height-slider" min="400" max="1200" value="1050" step="50">
+                    <span id="height-display">1050px</span>
+                    <div class="height-presets">
+                        <button class="height-btn" data-height="600">Compact</button>
+                        <button class="height-btn" data-height="800">Standard</button>
+                        <button class="height-btn" data-height="1050">Default</button>
+                        <button class="height-btn" data-height="1200">Extra Tall</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Timeline Navigation -->
+        <div class="timeline-nav-helper">
+            <div class="container">
+                <h3><i class="fas fa-compass"></i> Quick Navigation</h3>
+                
+                <!-- Key Technological Eras -->
+                <h4 style="color: var(--light-gold); margin: 1.5rem 0 1rem 0; font-size: 1.2rem;">Key Technological Innovations</h4>
+                <div class="nav-periods">
+                    <button class="period-btn era-btn" data-era="smoothbore-era">
+                        <i class="fas fa-fire"></i>
+                        <span>Smoothbore Era</span>
+                        <small>1720-1830 • Flintlock muskets & linear tactics</small>
+                    </button>
+                    <button class="period-btn era-btn" data-era="rifling-revolution">
+                        <i class="fas fa-crosshairs"></i>
+                        <span>Rifling & Percussion Revolution</span>
+                        <small>1820-1850 • Accuracy & reliability advances</small>
+                    </button>
+                    <button class="period-btn era-btn" data-era="repeating-era">
+                        <i class="fas fa-redo"></i>
+                        <span>Repeating Weapons Era</span>
+                        <small>1850-1865 • Multi-shot capability & rapid fire</small>
+                    </button>
+                </div>
+                
+                <!-- Historical Conflicts -->
+                <h4 style="color: var(--light-gold); margin: 2rem 0 1rem 0; font-size: 1.2rem;">Historical Conflicts</h4>
+                <div class="nav-periods">
+                    <button class="period-btn" data-year="1775">
+                        <i class="fas fa-flag"></i>
+                        <span>Revolutionary War Era</span>
+                        <small>1775-1783 • Smoothbore muskets & long rifles</small>
+                    </button>
+                    <button class="period-btn" data-year="1812">
+                        <i class="fas fa-ship"></i>
+                        <span>War of 1812</span>
+                        <small>1812-1815 • Domestic manufacturing proven</small>
+                    </button>
+                    <button class="period-btn" data-year="1846">
+                        <i class="fas fa-star"></i>
+                        <span>Mexican-American War</span>
+                        <small>1846-1848 • Rifled weapons superiority</small>
+                    </button>
+                    <button class="period-btn" data-year="1861">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Civil War Era</span>
+                        <small>1861-1865 • Repeating weapons revolution</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+
+    <!-- Timeline.js JavaScript -->
+    <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+    
+    <!-- Main JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/timeline.js"></script>
+</body>
+</html> 
