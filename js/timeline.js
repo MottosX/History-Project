@@ -335,10 +335,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 "group": "Weapons", // ROW 2-4: WEAPONS
                 
                 "media": {
-                    "url": "https://en.wikipedia.org/wiki/Spencer_repeating_rifle",
-                    "caption": "The Spencer repeating rifle and carbine delivered an enclosed magazine " +
-                              "and lever action in government-issued arms, widely used in Union cavalry " +
-                              "units yielding strategic advantages."
+                    "url": "media/Spencer Repeating Rifle.jpg",
+                    "caption": "President Abraham Lincoln test-fires the Spencer seven-shot repeater rifle in August 1863. This colour lithograph demonstrates Lincoln's personal interest in advanced weaponry that would give Union forces tactical advantages. Credit: American School, 19th century / Private Collection / Peter Newark American Pictures / The Bridgeman Art Library."
                 },
                 
                 "text": {
@@ -357,8 +355,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 "group": "Conflicts", // ROW 5: CONFLICTS
                 
                 "media": {
-                    "url": "https://www.loc.gov/resource/ppmsca.23664/",
-                    "caption": "Battle of Gettysburg - Rifled musket dominance"
+                    "url": "media/Battle_of_Gettysburg_Currier_Ives.png",
+                    "caption": "The battle of Gettysburg, Pa. July 3d. 1863, depicting the climactic battle fought July 1–3, 1863. This hand-colored lithograph by Currier and Ives shows the massive scale of Civil War engagements where repeating weapons gave Union forces significant tactical advantages. The battle was a turning point won by the North."
                 },
                 
                 "text": {
